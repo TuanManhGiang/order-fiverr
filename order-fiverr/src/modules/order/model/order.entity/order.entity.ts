@@ -1,10 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { IOrderState } from '../../state/IOrderState';
 import { OrderCompleteState } from '../../state/OrderCompleteState';
 import { OrderCancelState } from '../../state/OrderCancelState';
 import { OrderInProgressState } from '../../state/OrderInProgressState';
 import { OrderOfferState } from '../../state/OrderOfferState';
 import { HistoryOrder } from '../history-order.entity/history-order.entity';
+import Stripe from 'stripe';
+import { PaymentDTO } from 'src/modules/earn/DTO/payment.dto';
 
 @Entity()
 export class Order {
@@ -41,8 +50,8 @@ export class Order {
   public payment() {
     this.state.payment(this);
   }
-  public deposit() {
-    this.state.deposit(this);
+  public async deposit(chargeData: PaymentDTO): Promise<HistoryOrder> {
+    return this.state.deposit(this, chargeData);
   }
   @Column()
   customerID: number;
@@ -70,6 +79,4 @@ export class Order {
 
   @Column()
   status: string;
-  @OneToMany(() => HistoryOrder, (historyOrder) => historyOrder.orderID)
-  historyOrder: HistoryOrder[];
 }

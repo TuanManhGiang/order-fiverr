@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Order } from '../order.entity/order.entity';
 @Entity()
@@ -12,7 +14,8 @@ export class HistoryOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Order, (orderID) => orderID.historyOrder)
+  @OneToOne(() => Order, (order) => order.id)
+  @JoinColumn()
   orderID: number;
 
   @Column()
@@ -25,7 +28,7 @@ export class HistoryOrder {
   statusOrder: string;
 
   @Column({ nullable: true })
-  paymentID: number;
+  paymentID: string;
 
   @Column({ nullable: true })
   reviewID: number;
@@ -36,8 +39,12 @@ export class HistoryOrder {
     this.reviewID = reviewID;
     return this;
   }
-  public withpayment(paymentID: number): HistoryOrder {
+  public withpayment(paymentID: string): HistoryOrder {
     this.paymentID = paymentID;
+    return this;
+  }
+  public withStatus(status: string) {
+    this.statusOrder = status;
     return this;
   }
 }

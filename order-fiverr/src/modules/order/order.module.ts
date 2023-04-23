@@ -10,5 +10,6 @@ import { OrderOfferState } from './state/OrderOfferState';
   imports: [TypeOrmModule.forFeature([Order, HistoryOrder])],
   controllers: [OrderController],
   providers: [OrderService, OrderOfferState],
+  exports: [OrderService],
 })
 export class OrderModule {}

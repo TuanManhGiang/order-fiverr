@@ -1,21 +1,53 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { Order } from 'src/modules/order/model/order.entity/order.entity';
 import { PaymentService } from '../service/payment.service';
-import { OrderService } from 'src/modules/order/service/order.service';
+import { PaymentDTO } from '../DTO/payment.dto';
+import Stripe from 'stripe';
+import { HistoryOrder } from 'src/modules/order/model/history-order.entity/history-order.entity';
 
 @Controller('payment')
 export class PaymentController {
   constructor(
-    private readonly paymentService: PaymentService,
-    private readonly orderService: OrderService,
+    private readonly paymentService: PaymentService, // private readonly orderService: OrderService,
   ) {}
-  @Post('/deposit/:orderId') //slug
+  /* paymentIntent.ts
+   export const paymentIntent = async <T>(
+    url: string,
+    cartTotal: number
+  )
+  : Promise<T> => {
+    sucess_url="/"
+    cancel_url=""
+    const res = await fetch('payment/:id/deposit', {
+      method: 'Post',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: cartTotal*100
+        success_url:""
+        cancel_url:""
+      })
+    });
+
+    const {client_secret: clientSecret} = await res.json();
+    return await clientSecret;
+  }
+
+  */
+  @Post(':id/deposit') //tạo history order => thanh toán
   async deposit(
-    @Param('orderId') orderId: number,
-    @Body() paymentDTO,
-  ): Promise<Order> {
-    const order = this.orderService.findById(orderId);
-    this.paymentService.deposit(await order);
-    return;
+    @Body() body: PaymentDTO,
+    @Param('id') id: number,
+  ): Promise<HistoryOrder> {
+    return this.paymentService.deposit(id, body);
   }
 }

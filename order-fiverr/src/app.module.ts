@@ -7,6 +7,7 @@ import { HistoryOrder } from './modules/order/model/history-order.entity/history
 import { Order } from './modules/order/model/order.entity/order.entity';
 import { OrderModule } from './modules/order/order.module';
 import { EarnModule } from './modules/earn/earn.module';
+import { PaymentEntity } from './modules/earn/model/payment.entity/payment.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { EarnModule } from './modules/earn/earn.module';
       username: 'root',
       password: null,
       database: 'orderfiverr',
-      entities: [Order, HistoryOrder],
+      entities: [Order, HistoryOrder, PaymentEntity],
       synchronize: true,
     }),
     // MongooseModule.forRoot('mongodb://localhost:27017/job-test'),

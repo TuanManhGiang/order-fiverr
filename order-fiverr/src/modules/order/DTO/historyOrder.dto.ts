@@ -5,14 +5,15 @@ export default class HistoryOrderDTO {
   timeStart: Date;
   timeEnd: Date;
   statusOrder: string;
-  paymentID: number;
+  paymentID: string;
   packageDetailID: number;
   reviewID: number;
   totalPrice: number;
-  constructor(order: Order) {
+  constructor(order: Order, status: string) {
     this.orderID = order.id;
-    this.statusOrder = order.status;
     this.packageDetailID = order.packageDetailID;
+
+    this.statusOrder = status;
     this.timeStart = this.getTimeNow();
     console.log(this.timeStart);
     this.timeEnd = moment().add(order.deliveryTime, 'days').toDate();
@@ -20,13 +21,5 @@ export default class HistoryOrderDTO {
   }
   private getTimeNow(): Date {
     return moment().toDate();
-  }
-  public withReview(reviewID: number): HistoryOrderDTO {
-    this.reviewID = reviewID;
-    return this;
-  }
-  public withpayment(paymentID: number): HistoryOrderDTO {
-    this.paymentID = paymentID;
-    return this;
   }
 }

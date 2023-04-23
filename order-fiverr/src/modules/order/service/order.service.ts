@@ -11,36 +11,40 @@ import { OrderInProgressState } from '../state/OrderInProgressState';
 import { OrderOfferState } from '../state/OrderOfferState';
 import { HistoryOrder } from '../model/history-order.entity/history-order.entity';
 import HistoryOrderDTO from '../DTO/historyOrder.dto';
+import { IOrderState } from '../state/IOrderState';
 
 @Injectable()
 export class OrderService implements IOrderService {
+  private orderCompleteState: OrderCompleteState;
+  private orderCancelState: OrderCompleteState;
+  private orderInProgressState: OrderInProgressState;
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
     private orderOfferState: OrderOfferState,
-  ) {}
+  ) {
+    this.orderCompleteState = new OrderCompleteState();
+    this.orderCancelState = new OrderCancelState();
+    this.orderInProgressState = new OrderInProgressState();
+  }
   getAll(): Promise<Order[]> {
     return this.orderRepository.find();
+  }
+  private setStateByStatus(status: string) {
+    const stateStatus = {
+      Offer: this.orderOfferState,
+      Completed: this.orderCompleteState,
+      Cancel: this.orderCancelState,
+      Inprogress: this.orderInProgressState,
+    };
+    return stateStatus[status];
   }
   async findById(id: number): Promise<Order> {
     const order = await this.orderRepository.findOneBy({ id });
     if (!order) {
       throw new NotFoundException(`Order with id ${id} not found`);
     }
-    switch (order.status) {
-      case 'Offer':
-        order.setState(this.orderOfferState);
-        break;
-      case 'Completed':
-        order.setState(new OrderCompleteState());
-        break;
-      case 'Cancel':
-        order.setState(new OrderCancelState());
-        break;
-      case 'Inprogress':
-        order.setState(new OrderInProgressState());
-        break;
-    }
+    order.setState(this.setStateByStatus(order.status));
     return order;
   }
   async createOrder(order: OrderDTO): Promise<Order> {
