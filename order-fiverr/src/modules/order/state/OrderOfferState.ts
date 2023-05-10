@@ -11,12 +11,16 @@ import { HistoryOrder } from '../model/history-order.entity/history-order.entity
 import Stripe from 'stripe';
 import { PaymentDTO } from 'src/modules/earn/DTO/payment.dto';
 import { PaymentStripe } from 'src/modules/earn/payment/stripePayment';
+import { DataSource } from 'typeorm';
+import { historyOrder } from 'src/modules/earn/model/HistoryOrder';
+import { RedisService } from '../service/redis.service';
 @Injectable()
 export class OrderOfferState extends IOrderState {
   private paymentStripe: PaymentStripe;
   constructor(
     @InjectRepository(HistoryOrder)
     private historyOrderRepository: Repository<HistoryOrder>,
+    private readonly redisService: RedisService,
   ) {
     super();
     this.paymentStripe = new PaymentStripe();
@@ -32,31 +36,24 @@ export class OrderOfferState extends IOrderState {
   public cancel(order: Order) {
     order.setState(new OrderCancelState());
   }
-  // kiểm tra xem order đã thanh toán chưa => tiến hành thanh toán => lưu vào csdl
+
   public async deposit(
     order: Order,
     chargeData: PaymentDTO,
   ): Promise<HistoryOrder> {
-    // tạo history nếu tồn tại => đã thanh toán => báo lỗi
-    // tạo  history thành công => tiến hành thanh toán => thành công => lưu vào db
-    return this.createHistoryOrder(order, 'payment complete')
-      .then((result) =>
-        this.paymentStripe.charge(chargeData).then((charge) => {
-          return this.historyOrderRepository.save(
-            result.withpayment(charge.id),
-          );
-        }),
-      )
-      .catch(function () {
-        throw new HttpException('Order Already Payment ', HttpStatus.FORBIDDEN);
-      });
+    const idempotencyKey = await this.redisService.get(order.id + '');
+    if (!idempotencyKey) {
+      throw new HttpException('order already payment', HttpStatus.FORBIDDEN);
+    }
+    await this.paymentStripe.charge(chargeData, idempotencyKey);
+    await this.redisService.delete(order.id + '');
+    return this.createHistoryOrder(order, 'payment complete');
   }
-
   private async createHistoryOrder(
     order: Order,
     status: string,
   ): Promise<HistoryOrder> {
     const historyOrderDTO = new HistoryOrderDTO(order, status);
-    return this.historyOrderRepository.create(historyOrderDTO);
+    return await this.historyOrderRepository.save(historyOrderDTO);
   }
 }

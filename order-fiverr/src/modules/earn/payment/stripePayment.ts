@@ -12,9 +12,13 @@ export class PaymentStripe {
       { apiVersion: '2022-11-15' },
     );
   }
-  public async charge(chargeData: PaymentDTO): Promise<Stripe.Charge> {
-    const charge = this.stripe.charges.create(chargeData).catch(function () {
-      throw { '403': 'can not payment with stripe api ' };
+  public async charge(
+    chargeData: PaymentDTO,
+    idempotencyKey: any,
+  ): Promise<Stripe.Charge> {
+    chargeData.amount *= 100; //cen
+    const charge = this.stripe.charges.create(chargeData, {
+      idempotencyKey: idempotencyKey, // Truyền mã xác nhận duy nhất vào option
     });
     return charge; // return json
   }

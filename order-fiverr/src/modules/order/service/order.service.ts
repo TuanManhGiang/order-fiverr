@@ -40,7 +40,7 @@ export class OrderService implements IOrderService {
     return stateStatus[status];
   }
   async findById(id: number): Promise<Order> {
-    const order = await this.orderRepository.findOneBy({ id });
+    const order = await this.orderRepository.findOneBy({ id: id });
     if (!order) {
       throw new NotFoundException(`Order with id ${id} not found`);
     }
@@ -48,6 +48,9 @@ export class OrderService implements IOrderService {
     return order;
   }
   async createOrder(order: OrderDTO): Promise<Order> {
+    // calculate price : call to gig service take 'price  = gig_price + packageID_price + extra_Price
+    order.totalPrice = 1;
+
     const newOrder = this.orderRepository.create(order);
 
     return this.orderRepository.save(newOrder);
@@ -65,7 +68,14 @@ export class OrderService implements IOrderService {
     await this.orderRepository.save(order);
     return order;
   }
-
+  // public addDelayEventOrder(orderId: number, delay: number) {
+  //   return new Promise((resolve, reject) => {
+  //     client.set(orderId, 'Cancel order', 'EX', delay, (err, result) => {
+  //       if (err) return reject(err);
+  //       resolve(result);
+  //     });
+  //   });
+  // }
   async delete(id: number): Promise<void> {
     const order = await this.findById(id);
     this.orderRepository.save(order);

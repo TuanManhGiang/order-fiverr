@@ -17,7 +17,7 @@ export default class HistoryOrderDTO {
     this.timeStart = this.getTimeNow();
     console.log(this.timeStart);
     this.timeEnd = moment().add(order.deliveryTime, 'days').toDate();
-    this.totalPrice = 1;
+    this.totalPrice = order.totalPrice;
   }
   private getTimeNow(): Date {
     return moment().toDate();
