@@ -7,9 +7,8 @@ export class OrderDTO {
   public createTime: Date;
   public deliveryTime: number;
   public totalPrice: number;
-  public byOrder: boolean;
   public status: string;
   public timeStart: Date;
   public timeEnd: Date;
-  public packageDetailID: number;
+  
 }

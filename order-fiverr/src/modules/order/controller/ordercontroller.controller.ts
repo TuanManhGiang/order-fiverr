@@ -16,6 +16,7 @@ import { OrderService } from '../service/order.service';
 //import the cache manager
 import { Cache } from 'cache-manager';
 import { RedisService } from '../service/redis.service';
+import { StringDecoder } from 'string_decoder';
 const crypto = require('crypto');
 @Controller('orders')
 export class OrderController {
@@ -27,11 +28,13 @@ export class OrderController {
 
   @Post('/create')
   async createOrder(@Body() orderDTO: OrderDTO): Promise<Order> {
-    const newOrder = this.orderService.createOrder(orderDTO);
+    const newOrder = await this.orderService.createOrder(orderDTO);
     const iDempotencyKey = crypto.randomBytes(32).toString('hex');
-    this.redisService.setCache((await newOrder).id + '', iDempotencyKey);
+    await this.redisService.setCache( newOrder.id + '', iDempotencyKey,2000*60*60);
+    await this.redisService.addDelayEventOrder(newOrder.id + '',1*60/*60*/);
     return newOrder;
   }
+  
 
   @Get('find/:id') //slug
   async findOne(@Param('id') id: number): Promise<Order> {

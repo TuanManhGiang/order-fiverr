@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { CacheModule } from '@nestjs/common';
 import { RedisService } from './service/redis.service';
 
+
 const redisStore = require('cache-manager-redis-store').redisStore;
 
 @Module({
@@ -21,9 +22,15 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     }),
   ],
   controllers: [OrderController],
-  providers: [OrderService, RedisService, OrderOfferState],
+  providers: [
+    OrderService,
+    RedisService,
+    OrderOfferState,
+  ],
   exports: [OrderService, RedisService],
 })
 export class OrderModule {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) {
+
+  }
 }

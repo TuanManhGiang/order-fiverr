@@ -41,7 +41,6 @@ export class PaymentController {
     const {client_secret: clientSecret} = await res.json();
     return await clientSecret;
   }
-
   */
   @Post(':id/deposit') //tạo history order => thanh toán
   async deposit(
@@ -50,4 +49,5 @@ export class PaymentController {
   ): Promise<HistoryOrder> {
     return this.paymentService.deposit(id, body);
   }
+  
 }

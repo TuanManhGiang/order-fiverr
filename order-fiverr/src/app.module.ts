@@ -10,6 +10,7 @@ import { EarnModule } from './modules/earn/earn.module';
 import { PaymentEntity } from './modules/earn/model/payment.entity/payment.entity';
 import { CacheModule } from '@nestjs/common';
 
+
 const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
   imports: [
@@ -23,13 +24,8 @@ const redisStore = require('cache-manager-redis-store').redisStore;
       entities: [Order, HistoryOrder, PaymentEntity],
       synchronize: true,
     }),
-    CacheModule.register({
-      store: redisStore,
-      host: 'localhost', //default host
-      port: 6379,
-      ttl: 60 * 15, //default port
-    }),
 
+    
     // MongooseModule.forRoot('mongodb://localhost:27017/job-test'),
     OrderModule,
     EarnModule,

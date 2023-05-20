@@ -14,6 +14,7 @@ import { PaymentStripe } from 'src/modules/earn/payment/stripePayment';
 import { DataSource } from 'typeorm';
 import { historyOrder } from 'src/modules/earn/model/HistoryOrder';
 import { RedisService } from '../service/redis.service';
+import { stringify } from 'querystring';
 @Injectable()
 export class OrderOfferState extends IOrderState {
   private paymentStripe: PaymentStripe;
@@ -41,7 +42,7 @@ export class OrderOfferState extends IOrderState {
     order: Order,
     chargeData: PaymentDTO,
   ): Promise<HistoryOrder> {
-    const idempotencyKey = await this.redisService.get(order.id + '');
+    const idempotencyKey = await this.redisService.get(order.id+"");
     if (!idempotencyKey) {
       throw new HttpException('order already payment', HttpStatus.FORBIDDEN);
     }
@@ -55,5 +56,5 @@ export class OrderOfferState extends IOrderState {
   ): Promise<HistoryOrder> {
     const historyOrderDTO = new HistoryOrderDTO(order, status);
     return await this.historyOrderRepository.save(historyOrderDTO);
-  }
+  } 
 }
