@@ -9,8 +9,9 @@ import { OrderModule } from './modules/order/order.module';
 import { EarnModule } from './modules/earn/earn.module';
 import { PaymentEntity } from './modules/earn/model/payment.entity/payment.entity';
 import { CacheModule } from '@nestjs/common';
-
-
+import {AdminRoleGuard} from 'src/common/guards/admin.role.guard'
+import {RoleGuard} from 'src/common/guards/role.guard'
+import { UserRoleGuard} from 'src/common/guards/use.role.guard'
 const redisStore = require('cache-manager-redis-store').redisStore;
 @Module({
   imports: [
@@ -31,6 +32,8 @@ const redisStore = require('cache-manager-redis-store').redisStore;
     EarnModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    AdminRoleGuard,RoleGuard,UserRoleGuard,
+  ],
 })
 export class AppModule {}

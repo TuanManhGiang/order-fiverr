@@ -12,12 +12,12 @@ import { order } from '../model/Order';
 export class PaymentService {
   constructor(private readonly orderService: OrderService) {}
   // buyer payment for fiverr
-  async deposit(id: number, chargeData: PaymentDTO): Promise<HistoryOrder> {
-    const order = await this.orderService.findById(id);
-    chargeData.amount = order.totalPrice;
-    const charge = order.deposit(chargeData); // thanh toán tùy vào state : offerState.deposit()
-    return charge;
-  }
+  // async deposit(id: number, chargeData: PaymentDTO): Promise<HistoryOrder> {
+  //   const order = await this.orderService.findById(id);
+  //   chargeData.amount = order.totalPrice;
+  //   const charge = order.deposit(chargeData); // thanh toán tùy vào state : offerState.deposit()
+  //   return charge;
+  // }
 
   // fiverr payment for seller
   payment() {}

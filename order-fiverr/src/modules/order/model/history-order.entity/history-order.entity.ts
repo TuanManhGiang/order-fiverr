@@ -35,16 +35,5 @@ export class HistoryOrder {
 
   @Column()
   totalPrice: number;
-  public withReview(reviewID: number): HistoryOrder {
-    this.reviewID = reviewID;
-    return this;
-  }
-  public withpayment(paymentID: string): HistoryOrder {
-    this.paymentID = paymentID;
-    return this;
-  }
-  public withStatus(status: string) {
-    this.statusOrder = status;
-    return this;
-  }
+
 }

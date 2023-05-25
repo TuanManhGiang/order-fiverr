@@ -31,8 +31,12 @@ export class Order {
     //thay đổi trạng thái và thực thi logic ứng với mỗi trạng thái
     this.status = state.nameState;
     this.state = state;
+  
   }
-  constructor() {}
+  constructor() {
+    this.status ="Offer"
+  
+  }
   public changeState() {
     this.state.changeState(this);
   }

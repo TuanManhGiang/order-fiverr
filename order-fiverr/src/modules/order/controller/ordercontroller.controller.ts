@@ -26,19 +26,22 @@ export class OrderController {
     private readonly redisService: RedisService,
   ) {}
 
+
   @Post('/create')
-  async createOrder(@Body() orderDTO: OrderDTO): Promise<Order> {
+  async createOrder(@Body() orderDTO: OrderDTO): Promise<OrderDTO> {
     const newOrder = await this.orderService.createOrder(orderDTO);
-    const iDempotencyKey = crypto.randomBytes(32).toString('hex');
-    await this.redisService.setCache( newOrder.id + '', iDempotencyKey,2000*60*60);
-    await this.redisService.addDelayEventOrder(newOrder.id + '',1*60/*60*/);
+    console.log(newOrder.id);
+    const idempotencyKey = crypto.randomBytes(32).toString('hex');
+    await this.redisService.setCache(newOrder.id + '', idempotencyKey,2000*60*60);
+    await this.redisService.addDelayEventOrder(await newOrder.id + '',1*60/*60*/);
     return newOrder;
   }
   
 
   @Get('find/:id') //slug
-  async findOne(@Param('id') id: number): Promise<Order> {
-    return this.orderService.findById(id);
+  async findOne(@Param('id') id: number): Promise<OrderDTO> {
+    const order= this.orderService.findById(id);
+    return order;
   }
   @Get('/get-number-cache')
   async getNumber(): Promise<any> {
@@ -60,14 +63,14 @@ export class OrderController {
   }
 
   @Get(':id/confirm')
-  async confirm(@Param('id') id: number): Promise<Order> {
+  async confirm(@Param('id') id: number): Promise<OrderDTO> {
     // if (!this.orderService.checkPermission(id, orderID)) {
     //   throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
     // }
     return this.orderService.confirm(id);
   }
   @Get(':id/cancel')
-  async cancel(@Param('id') id: number): Promise<Order> {
+  async cancel(@Param('id') id: number): Promise<OrderDTO> {
     return this.orderService.cancel(id);
   }
 }

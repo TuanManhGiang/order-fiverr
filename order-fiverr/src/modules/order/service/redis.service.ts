@@ -39,9 +39,8 @@ export class RedisService {
       if (message === orderId) {
         console.log(`Key ${orderId} đã hết hạn!`);
         // Thực hiện hành động tương ứng khi key hết hạn
-
       }
-      
+  
     });
 
     this.client.on('error', (err: any) => {

@@ -25,9 +25,8 @@ const redisStore = require('cache-manager-redis-store').redisStore;
   providers: [
     OrderService,
     RedisService,
-    OrderOfferState,
   ],
-  exports: [OrderService, RedisService],
+  exports: [OrderService, RedisService]
 })
 export class OrderModule {
   constructor(private dataSource: DataSource) {

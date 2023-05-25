@@ -15,19 +15,22 @@ import { DataSource } from 'typeorm';
 import { historyOrder } from 'src/modules/earn/model/HistoryOrder';
 import { RedisService } from '../service/redis.service';
 import { stringify } from 'querystring';
+
 @Injectable()
 export class OrderOfferState extends IOrderState {
   private paymentStripe: PaymentStripe;
-  constructor(
-    @InjectRepository(HistoryOrder)
-    private historyOrderRepository: Repository<HistoryOrder>,
-    private readonly redisService: RedisService,
-  ) {
+  private historyOrderRepository;
+  private redisService;
+  constructor(historyOrderRepository,redisService) {
     super();
+    this.historyOrderRepository = historyOrderRepository;
+    this.redisService = redisService;
     this.paymentStripe = new PaymentStripe();
     this.nameState = 'Offer';
+    
   }
-  nameState: string;
+
+  
   changeState(order: Order) {
     order.setState(new OrderInProgressState());
   }
