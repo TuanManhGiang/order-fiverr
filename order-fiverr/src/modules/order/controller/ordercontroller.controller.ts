@@ -26,40 +26,60 @@ export class OrderController {
     private readonly redisService: RedisService,
   ) {}
 
-
   @Post('/create')
   async createOrder(@Body() orderDTO: OrderDTO): Promise<OrderDTO> {
     const newOrder = await this.orderService.createOrder(orderDTO);
-    console.log(newOrder.id);
+
     const idempotencyKey = crypto.randomBytes(32).toString('hex');
-    await this.redisService.setCache(newOrder.id + '', idempotencyKey,2000*60*60);
-    await this.redisService.addDelayEventOrder(await newOrder.id + '',1*60/*60*/);
+    await this.redisService.setCache(
+      newOrder.id + '',
+      idempotencyKey,
+      2000 * 60 * 60,
+    );
+
+    await this.redisService.addDelayEventOrder(
+      (await newOrder.id) + '',
+      1 * 60 * 60,
+    );
+    console.log(
+      'create order ' + newOrder.id + ', The order will expire after 1 hour',
+    );
     return newOrder;
   }
-  
 
   @Get('find/:id') //slug
   async findOne(@Param('id') id: number): Promise<OrderDTO> {
-    const order= this.orderService.findById(id);
+    const order = this.orderService.findById(id);
     return order;
   }
-  @Get('/get-number-cache')
-  async getNumber(): Promise<any> {
-    const val = await this.redisService.get('number');
-    if (val) {
-      return {
-        data: val,
-        FromRedis: 'this is loaded from redis cache',
-      };
-    }
-
-    if (!val) {
-      await this.redisService.setCache('number', this.randomNumDbs);
-      return {
-        data: this.randomNumDbs,
-        FromRandomNumDbs: 'this is loaded from randomNumDbs',
-      };
-    }
+  @Get('find-orders-customer/:id') //slug
+  async findOneByCustomerID(@Param('id') id: string): Promise<OrderDTO[]> {
+    const order = await this.orderService.findByCustomerID(id);
+    return order;
+  }
+  @Get('find-order/:id/customer/:customerID') //slug
+  async findOrderDetailByID(
+    @Param('id') id: number,
+    @Param('customerID') customerid: string,
+  ): Promise<OrderDTO> {
+    const order = await this.orderService.findOrderDetailByID(id, customerid);
+    return order[0];
+  }
+  @Get('find-orders-freelancer/:id') //slug
+  async findOneByFreelancerID(@Param('id') id: string): Promise<OrderDTO[]> {
+    const order = await this.orderService.findByFreelancerID(id);
+    return order;
+  }
+  @Get('find-order/:id/freelancer/:freelancerID') //slug
+  async findOrderDetailByFreelancerID(
+    @Param('id') id: number,
+    @Param('freelancerID') freelancerid: string,
+  ): Promise<OrderDTO> {
+    const order = await this.orderService.findOrderDetailByFreelancerID(
+      id,
+      freelancerid,
+    );
+    return order[0];
   }
 
   @Get(':id/confirm')

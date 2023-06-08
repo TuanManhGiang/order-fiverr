@@ -19,52 +19,52 @@ import { PaymentDTO } from 'src/modules/earn/DTO/payment.dto';
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
-  private state: IOrderState;
-  // public offerOrderState: IOrderState;
-  // public confirmOrderState: IOrderState;
-  // public inProgressOrderState: IOrderState;
-  // public compelteOrderState: IOrderState;
-  public getState(): IOrderState {
-    return this.state;
-  }
-  public setState(state: IOrderState) {
-    //thay đổi trạng thái và thực thi logic ứng với mỗi trạng thái
-    this.status = state.nameState;
-    this.state = state;
-  
-  }
-  constructor() {
-    this.status ="Offer"
-  
-  }
-  public changeState() {
-    this.state.changeState(this);
-  }
-  public confirm() {
-    this.state.confirm(this);
-  }
-  private complete() {}
-  public cancel() {
-    this.state.cancel(this);
-  }
-  public checkPermission(id: number): Boolean {
-    if (id == this.FreelancerID || id == this.customerID) return true;
-    return false;
-  }
-  public payment() {
-    this.state.payment(this);
-  }
-  public async deposit(chargeData: PaymentDTO): Promise<HistoryOrder> {
-    return this.state.deposit(this, chargeData);
-  }
+  // private state: IOrderState;
+  // // public offerOrderState: IOrderState;
+  // // public confirmOrderState: IOrderState;
+  // // public inProgressOrderState: IOrderState;
+  // // public compelteOrderState: IOrderState;
+  // public getState(): IOrderState {
+  //   return this.state;
+  // }
+  // public setState(state: IOrderState) {
+  //   //thay đổi trạng thái và thực thi logic ứng với mỗi trạng thái
+  //   this.status = state.nameState;
+  //   this.state = state;
+
+  // }
+  // constructor() {
+  //   this.status ="Offer"
+
+  // }
+  // public changeState() {
+  //   this.state.changeState(this);
+  // }
+  // public confirm() {
+  //   this.state.confirm(this);
+  // }
+  // private complete() {}
+  // public cancel() {
+  //   this.state.cancel(this);
+  // }
+  // public checkPermission(id: number): Boolean {
+  //   if (id == this.FreelancerID || id == this.customerID) return true;
+  //   return false;
+  // }
+  // public payment() {
+  //   this.state.payment(this);
+  // }
+  // public async deposit(chargeData: PaymentDTO): Promise<HistoryOrder> {
+  //   return this.state.deposit(this, chargeData);
+  // }
   @Column()
-  customerID: number;
+  customerID: string;
 
   @Column()
   jobPostID: number;
 
   @Column()
-  FreelancerID: number;
+  FreelancerID: string;
 
   @Column()
   createTime: Date;

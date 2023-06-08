@@ -1,5 +1,6 @@
 import { Order } from '../model/order.entity/order.entity';
 import * as moment from 'moment';
+import { OrderDTO } from '../DTO/order.dto';
 export default class HistoryOrderDTO {
   orderID: number;
   timeStart: Date;
@@ -9,10 +10,9 @@ export default class HistoryOrderDTO {
   packageDetailID: number;
   reviewID: number;
   totalPrice: number;
-  constructor(order: Order, status: string) {
+  constructor(order: OrderDTO, status: string) {
     this.orderID = order.id;
     this.packageDetailID = order.packageDetailID;
-
     this.statusOrder = status;
     this.timeStart = this.getTimeNow();
     console.log(this.timeStart);

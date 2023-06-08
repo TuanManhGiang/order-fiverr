@@ -16,10 +16,18 @@ export class PaymentStripe {
     chargeData: PaymentDTO,
     idempotencyKey: any,
   ): Promise<Stripe.Charge> {
-    chargeData.amount *= 100; //cen
+    chargeData.amount = 100 * chargeData.amount;
     const charge = this.stripe.charges.create(chargeData, {
       idempotencyKey: idempotencyKey, // Truyền mã xác nhận duy nhất vào option
     });
     return charge; // return json
+  }
+  public async payment(chargeData: PaymentDTO): Promise<Stripe.Transfer> {
+    const transfer = await this.stripe.transfers.create({
+      amount: chargeData.amount * 100,
+      currency: 'usd',
+      destination: 'acct_1NCPNrQ7A7ZXgPzO',
+    });
+    return transfer; // return json
   }
 }

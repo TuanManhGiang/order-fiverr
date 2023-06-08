@@ -6,5 +6,4 @@ export interface IOrderService {
   findById(id: number): Promise<OrderDTO>;
   createOrder(order: OrderDTO): Promise<OrderDTO>;
   confirm(id: number, order: Order): Promise<OrderDTO>;
-  delete(id: number): Promise<void>;
 }

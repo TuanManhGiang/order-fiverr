@@ -13,9 +13,7 @@ export class HistoryOrder {
   constructor() {}
   @PrimaryGeneratedColumn()
   id: number;
-
-  @OneToOne(() => Order, (order) => order.id)
-  @JoinColumn()
+  @Column()
   orderID: number;
 
   @Column()
@@ -35,5 +33,4 @@ export class HistoryOrder {
 
   @Column()
   totalPrice: number;
-
 }
